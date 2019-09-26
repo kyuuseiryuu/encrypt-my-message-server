@@ -2,8 +2,9 @@ import {Router} from 'express';
 import {findAll, findPubKeyWithHash} from "../business/KeyHash";
 import {formatData, getSha512, isValidatePass} from "../utils";
 import {getMessages, postMessage} from "../business/HashMessage";
-import KeyHashModel from "../models/KeyHashModel";
 import HashMessageModel from "../models/HashMessageModel";
+import checkParamHashRegister from "../middleware/checkParamHashRegister";
+import verifyParamHashQuerySign from "../middleware/verifyParamHashQuerySign";
 
 const userRouter = Router();
 
@@ -23,24 +24,20 @@ userRouter.post('/users/register', async (req, res) => {
   res.json(formatData({ verifyPass, hash }));
 });
 
-userRouter.post('/users/:hash/messages', async (req, res) => {
+userRouter.post('/users/:hash/messages', checkParamHashRegister, async (req, res) => {
   const { hash } = req.params;
   const { message = '' } = req.body;
   res.json(formatData(await postMessage(hash, message)));
 });
 
-userRouter.get('/users/:hash/messages', async (req, res) => {
+userRouter.get('/users/:hash/messages', checkParamHashRegister, verifyParamHashQuerySign, async (req, res) => {
   const { hash } = req.params;
-  const { sign } = req.query;
-  const keyHash = await KeyHashModel.findOne({ hash });
-  const keyHashObj = keyHash.toObject({ virtuals: true, versionKey: false });
   const data = await getMessages(hash);
   res.json(formatData(data));
 });
 
-userRouter.delete('/users/:hash/messages', async (req, res) => {
+userRouter.delete('/users/:hash/messages', checkParamHashRegister, verifyParamHashQuerySign , async (req, res) => {
   const { hash } = req.params;
-  const keyHash = await KeyHashModel.findOne({ hash }).exec();
   const data = await getMessages(hash);
   await HashMessageModel.deleteMany({ hash });
   res.json(formatData(data));

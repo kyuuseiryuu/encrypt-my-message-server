@@ -1,4 +1,5 @@
 import * as crypto from "crypto";
+import {SystemStatusCode} from "./statusCode/system";
 const NodeRSA = require('node-rsa');
 
 
@@ -20,7 +21,7 @@ export function isValidatePass(publicKey: string, sign: string): boolean {
   }
 }
 
-export function formatData(data: any, message: string = '', code: number = 0) {
+export function formatData(data: any, message: string = '', code: number = SystemStatusCode.NORMAL) {
   return {
     code,
     message,
