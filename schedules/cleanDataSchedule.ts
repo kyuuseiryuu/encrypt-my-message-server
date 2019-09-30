@@ -5,9 +5,10 @@ import appConfig from "../appConfig";
 
 schedule.scheduleJob('* 24 * * * *', async () => {
   const time = moment().add(appConfig.dataMaxSaveDays, 'days').toDate().getTime();
-  await HashMessageModel.deleteMany({
+  const result = await HashMessageModel.deleteMany({
     createAt: {
       $lt: time,
     }
   });
+  console.log('cleanDataSchedule:', result);
 });
