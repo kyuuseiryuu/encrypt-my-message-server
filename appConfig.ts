@@ -5,4 +5,5 @@ export default {
     urls: process.env.MONGO || `mongodb://db/emm_server`,
     opts: { useNewUrlParser: true },
   },
+  dataMaxSaveDays: 3,
 }
