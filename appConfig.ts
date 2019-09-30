@@ -1,3 +1,5 @@
+import { config } from 'dotenv';
+config({});
 export default {
   listen: '0.0.0.0',
   port: 30021,
@@ -5,4 +7,5 @@ export default {
     urls: process.env.MONGO || `mongodb://db/emm_server`,
     opts: { useNewUrlParser: true },
   },
+  dataMaxSaveDays: 3,
 }
