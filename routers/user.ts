@@ -5,6 +5,7 @@ import {getMessages, postMessage} from "../business/HashMessage";
 import HashMessageModel from "../models/HashMessageModel";
 import checkParamHashRegister from "../middleware/checkParamHashRegister";
 import verifyParamHashQuerySign from "../middleware/verifyParamHashQuerySign";
+import {UserStatusCodeEnum} from "../statusCode/user";
 
 const userRouter = Router();
 
@@ -21,7 +22,10 @@ userRouter.post('/users/register', async (req, res) => {
     await findPubKeyWithHash(hash, publicKey);
   }
   console.log('register', { publicKey, verifyPass });
-  res.json(formatData({ verifyPass, hash }));
+  res.json(formatData(
+    { verifyPass, hash },
+    verifyPass ? '' : 'hash 校验异常，请使用私钥加密公钥 SHA512 hash 作为签名',
+    UserStatusCodeEnum.SIGN_CHECK_ERROR));
 });
 
 userRouter.post('/users/:hash/messages', checkParamHashRegister, async (req, res) => {
